@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CloudLab — EC2 Practice Dashboard</title>
+<style>
+:root{--bg:#0b1020;--panel:#121a2d;--panel2:#172239;--line:#263550;--text:#edf3ff;--muted:#91a0bc;--blue:#76a9ff;--green:#50d6a0;--yellow:#ffd166;--red:#ff7777}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 15% 0%,#17264a 0,transparent 35%),var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+button,input,select{font:inherit}button{cursor:pointer;border:1px solid var(--line);border-radius:10px;padding:10px 14px;background:#202e49;color:var(--text);transition:.2s}button:hover{filter:brightness(1.15);transform:translateY(-1px)}button:disabled{opacity:.45;cursor:not-allowed;transform:none}.primary{background:var(--blue);color:#081225;border-color:transparent;font-weight:700}.danger{background:#44232d;border-color:#70313d;color:#ffb5b5}.success{background:#153b35;border-color:#246b5b;color:#9cf1d3}
+.layout{display:grid;grid-template-columns:245px 1fr;min-height:100vh}.sidebar{border-right:1px solid var(--line);padding:25px 17px;background:#0c1324dd}.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;margin:2px 10px 35px}.logo{width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:linear-gradient(135deg,#8bb8ff,#a8f0d5);color:#081225}.nav-label{font-size:11px;color:#657796;letter-spacing:1.5px;font-weight:800;margin:22px 12px 8px}.nav{display:flex;align-items:center;gap:11px;padding:11px 13px;border-radius:10px;color:var(--muted);margin:4px 0}.nav.active{background:#1d2b46;color:#fff;border:1px solid #2c4165}.nav span:first-child{width:22px;text-align:center}.side-note{margin:35px 5px 0;padding:15px;border:1px solid var(--line);background:#101a2d;border-radius:12px;color:var(--muted);font-size:12px}.side-note strong{display:block;color:var(--text);margin-bottom:6px}
+main{min-width:0;padding:26px clamp(16px,3vw,38px) 40px}.topbar{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:28px}.eyebrow{color:var(--green);font-size:12px;text-transform:uppercase;letter-spacing:1.4px;font-weight:800}.topbar h1{margin:4px 0 0;font-size:clamp(24px,3vw,34px);letter-spacing:-.8px}.top-actions{display:flex;align-items:center;gap:10px}.pill{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);padding:7px 10px;border-radius:30px;color:var(--muted);font-size:12px}.dot{width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block}.notice{padding:12px 15px;border:1px solid #6a5426;background:#2b2518;color:#ffe2a0;border-radius:10px;margin-bottom:22px;font-size:13px}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px;margin-bottom:20px}.stat,.panel{background:linear-gradient(145deg,#151f34,#11192b);border:1px solid var(--line);border-radius:15px}.stat{padding:18px}.stat-head{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:13px}.stat-icon{font-size:19px}.stat-value{font-size:28px;font-weight:800;margin:12px 0 3px;letter-spacing:-.6px}.stat-foot{font-size:12px;color:var(--muted)}.content-grid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(280px,.9fr);gap:18px}.panel{padding:20px;margin-bottom:18px}.panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:18px}.panel h2{font-size:17px;margin:0 0 4px}.sub{color:var(--muted);font-size:12px}.status{font-size:11px;font-weight:800;padding:5px 9px;border-radius:20px;background:#183c34;color:#83e7c3}.status.stopped{background:#3a2730;color:#ffaaaa}.instance{display:flex;gap:14px;align-items:center;padding:16px;background:#0e1728;border:1px solid var(--line);border-radius:12px}.instance-icon{width:45px;height:45px;border-radius:12px;background:#21375a;display:grid;place-items:center;font-size:23px}.instance-info{flex:1;min-width:0}.instance-info strong{display:block}.instance-info small{display:block;color:var(--muted);margin-top:3px;overflow-wrap:anywhere}.instance-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}.field{display:flex;flex-direction:column;gap:7px;margin-bottom:14px}.field label{font-size:12px;color:var(--muted)}select,input{width:100%;background:#0c1526;color:var(--text);border:1px solid var(--line);border-radius:9px;padding:10px 11px;outline:none}select:focus,input:focus{border-color:var(--blue)}.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.meter{height:8px;border-radius:9px;background:#253149;overflow:hidden;margin:9px 0 6px}.meter div{height:100%;width:22%;background:linear-gradient(90deg,#6b9eff,#57dfb0);transition:width .3s}.progress-label{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}.checklist{display:grid;gap:12px}.check{display:flex;align-items:center;gap:10px;color:#d6e0f2;font-size:13px}.check input{width:16px;height:16px;accent-color:#6eabff}.terminal{background:#070d18;border:1px solid #26344c;border-radius:11px;overflow:hidden}.terminal-head{padding:10px 13px;border-bottom:1px solid #26344c;color:var(--muted);font-size:12px;display:flex;justify-content:space-between}.terminal-body{height:210px;overflow:auto;padding:13px;font:12px/1.8 ui-monospace,SFMono-Regular,Consolas,monospace;color:#a7e7c9;white-space:pre-wrap}.terminal-body .dim{color:#7285a5}.terminal-body .warn{color:#ffd166}.quick-links{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.quick{padding:13px;border:1px solid var(--line);border-radius:10px;background:#0e1728}.quick b{display:block;font-size:13px}.quick small{color:var(--muted);font-size:11px}.toast{position:fixed;bottom:20px;right:20px;background:#eaf5ff;color:#0b1426;padding:12px 17px;border-radius:10px;box-shadow:0 10px 35px #0008;transform:translateY(100px);opacity:0;transition:.25s;z-index:5;font-weight:700}.toast.show{transform:translateY(0);opacity:1}.footer{text-align:center;color:#63718b;font-size:11px;margin-top:12px}
+@media(max-width:1050px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.layout{grid-template-columns:205px 1fr}.content-grid{grid-template-columns:1fr}}
+@media(max-width:700px){.layout{grid-template-columns:1fr}.sidebar{display:none}main{padding:18px 14px}.topbar{align-items:flex-start;flex-direction:column}.top-actions{width:100%;justify-content:space-between}.grid{gap:10px}.stat{padding:13px}.stat-value{font-size:23px}.instance{align-items:flex-start;flex-wrap:wrap}.instance-actions{width:100%}.form-row{grid-template-columns:1fr}.quick-links{grid-template-columns:1fr}.panel{padding:15px}}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand"><div class="logo">☁</div> CloudLab</div>
+  <div class="nav-label">WORKSPACE</div>
+  <div class="nav active"><span>▦</span> Overview</div>
+  <div class="nav"><span>▣</span> EC2 Instances</div>
+  <div class="nav"><span>◈</span> Storage (S3)</div>
+  <div class="nav"><span>⌁</span> Networking</div>
+  <div class="nav"><span>▤</span> Monitoring</div>
+  <div class="nav-label">LEARN</div>
+  <div class="nav"><span>⌘</span> Command Practice</div>
+  <div class="nav"><span>✓</span> Deployment Checklist</div>
+  <div class="side-note"><strong>🎯 Practice mode</strong>This is a frontend simulation. Buttons update this page only; no AWS resources are created and no cloud credentials are needed.</div>
+</aside>
+<main>
+  <header class="topbar">
+    <div><div class="eyebrow">Cloud learning workspace</div><h1>EC2 Practice Dashboard</h1><div class="sub">Learn the launch-to-deploy workflow, one step at a time.</div></div>
+    <div class="top-actions"><span class="pill"><span class="dot"></span> Local demo mode</span><button id="resetBtn">↻ Reset demo</button></div>
+  </header>
+  <div class="notice">⚠ <b>Safe practice environment:</b> this is a standalone HTML/CSS/JavaScript demo. It does not connect to AWS, create resources, or incur cloud charges.</div>
+  <section class="grid">
+    <div class="stat"><div class="stat-head">Instances <span class="stat-icon">▣</span></div><div class="stat-value" id="instanceCount">1</div><div class="stat-foot">Demo instance configured</div></div>
+    <div class="stat"><div class="stat-head">Running <span class="stat-icon">●</span></div><div class="stat-value" id="runningCount">1</div><div class="stat-foot">Simulated instance state</div></div>
+    <div class="stat"><div class="stat-head">CPU utilization <span class="stat-icon">⌁</span></div><div class="stat-value" id="cpuValue">12%</div><div class="stat-foot">Illustrative metric only</div></div>
+    <div class="stat"><div class="stat-head">Monthly cost <span class="stat-icon">＄</span></div><div class="stat-value">$0.00</div><div class="stat-foot">No AWS connection</div></div>
+  </section>
+  <div class="content-grid">
+    <div>
+      <section class="panel">
+        <div class="panel-head"><div><h2>EC2 instance simulator</h2><div class="sub">Practice instance controls without launching a real server.</div></div><span class="status" id="stateBadge">● RUNNING</span></div>
+        <div class="instance">
+          <div class="instance-icon">▣</div>
+          <div class="instance-info"><strong id="instanceName">cloudlab-web-server</strong><small>Instance ID: i-demo-0a12bc34 · Type: t3.micro</small><small id="instanceDetails">Region: ap-south-1 (Mumbai) · Public IP: 18.204.10.25 (sample)</small></div>
+        </div>
+        <div class="instance-actions">
+          <button class="success" id="startBtn" disabled>▶ Start instance</button>
+          <button class="danger" id="stopBtn">■ Stop instance</button>
+          <button id="rebootBtn">↻ Reboot</button>
+          <button id="ipBtn">⌁ Change sample IP</button>
+        </div>
+      </section>
+      <section class="panel">
+        <div class="panel-head"><div><h2>Configure your demo</h2><div class="sub">Change settings to see the dashboard update.</div></div></div>
+        <div class="form-row">
+          <div class="field"><label for="region">AWS region (display only)</label><select id="region"><option value="ap-south-1">Asia Pacific — Mumbai</option><option value="ap-southeast-1">Asia Pacific — Singapore</option><option value="us-east-1">US East — N. Virginia</option><option value="eu-west-1">Europe — Ireland</option></select></div>
+          <div class="field"><label for="instanceType">Instance type (display only)</label><select id="instanceType"><option>t3.micro</option><option>t2.micro</option><option>t3.small</option><option>t3.medium</option></select></div>
+        </div>
+        <div class="field"><label for="serverName">Instance name</label><input id="serverName" maxlength="32" value="cloudlab-web-server" placeholder="e.g. my-first-server"></div>
+        <button class="primary" id="applyBtn">Apply demo settings</button>
+      </section>
+      <section class="panel">
+        <div class="panel-head"><div><h2>Activity log</h2><div class="sub">See what each action would represent.</div></div><button id="clearLogBtn">Clear log</button></div>
+        <div class="terminal"><div class="terminal-head"><span>cloudlab-terminal</span><span>●●●</span></div><div class="terminal-body" id="log" aria-live="polite"><div class="dim">[14:00:00] CloudLab demo initialized.</div><div>[14:00:01] Sample EC2 instance is running.</div><div class="warn">[INFO] This terminal is simulated; no AWS API calls are made.</div></div></div>
+      </section>
+    </div>
+    <div>
+      <section class="panel">
+        <div class="panel-head"><div><h2>Deployment readiness</h2><div class="sub">Tick items as you learn each step.</div></div><span id="checkCount" class="pill">0 / 5</span></div>
+        <div class="meter"><div id="progressBar"></div></div><div class="progress-label"><span>Learning progress</span><span id="progressPercent">0%</span></div>
+        <div class="checklist" style="margin-top:18px">
+          <label class="check"><input type="checkbox" class="task"> Understand EC2 and regions</label>
+          <label class="check"><input type="checkbox" class="task"> Choose an instance type</label>
+          <label class="check"><input type="checkbox" class="task"> Learn security groups and ports</label>
+          <label class="check"><input type="checkbox" class="task"> Connect using SSH or browser terminal</label>
+          <label class="check"><input type="checkbox" class="task"> Install a web server and test HTTP</label>
+        </div>
+      </section>
+      <section class="panel">
+        <div class="panel-head"><div><h2>Quick practice</h2><div class="sub">Choose a topic to add a learning note to the log.</div></div></div>
+        <div class="quick-links">
+          <button class="quick" data-topic="security"><b>🛡 Security groups</b><small>Inbound rules</small></button>
+          <button class="quick" data-topic="ssh"><b>⌨ SSH connection</b><small>Connect safely</small></button>
+          <button class="quick" data-topic="http"><b>🌐 HTTP web server</b><small>Port 80 basics</small></button>
+        </div>
+      </section>
+      <section class="panel">
+        <div class="panel-head"><div><h2>What to try on real EC2</h2><div class="sub">When you're ready to leave demo mode</div></div></div>
+        <ol style="padding-left:20px;color:#c8d5ea;font-size:13px">
+          <li style="margin-bottom:9px">Create an AWS account and enable MFA.</li>
+          <li style="margin-bottom:9px">Launch a small eligible instance and review pricing first.</li>
+          <li style="margin-bottom:9px">Allow only the ports you need in its security group.</li>
+          <li style="margin-bottom:9px">Upload this HTML file and serve it with a web server.</li>
+          <li>Stop or terminate resources when finished, as appropriate.</li>
+        </ol>
+        <button id="deployHelpBtn" class="primary" style="width:100%">Show HTML deployment steps</button>
+      </section>
+    </div>
+  </div>
+  <div class="footer">CloudLab Practice UI · Standalone HTML · No environment variables · No backend</div>
+</main>
+</div>
+<div class="toast" id="toast" role="status"></div>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  let running = true;
+  const initialLog = $('log').innerHTML;
+  function time(){ return new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'}); }
+  function log(message, type=''){ const row=document.createElement('div'); if(type) row.className=type; row.textContent=`[${time()}] ${message}`; $('log').appendChild(row); $('log').scrollTop=$('log').scrollHeight; }
+  let toastTimer;
+  function toast(message){ $('toast').textContent=message; $('toast').classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>$('toast').classList.remove('show'),2600); }
+  function setState(next, message){ running=next; $('stateBadge').textContent=next?'● RUNNING':'● STOPPED'; $('stateBadge').classList.toggle('stopped',!next); $('startBtn').disabled=next; $('stopBtn').disabled=!next; $('runningCount').textContent=next?'1':'0'; $('cpuValue').textContent=next?`${Math.floor(Math.random()*20)+4}%`:'—'; log(message); }
+  $('startBtn').addEventListener('click',()=>{setState(true,'Start action simulated. A real EC2 start request would be sent here.');toast('Demo instance started');});
+  $('stopBtn').addEventListener('click',()=>{setState(false,'Stop action simulated. A real EC2 stop request would be sent here.');toast('Demo instance stopped');});
+  $('rebootBtn').addEventListener('click',()=>{log('Reboot action simulated; instance remains '+(running?'running.':'stopped.'), 'warn');toast('Reboot simulated');});
+  $('ipBtn').addEventListener('click',()=>{const ip=`18.${Math.floor(Math.random()*220)+20}.${Math.floor(Math.random()*250)}.${Math.floor(Math.random()*250)}`;$('instanceDetails').textContent=`Region: ${$('region').value} (${ $('region').selectedOptions[0].text.split('— ')[1] }) · Public IP: ${ip} (sample)`;log(`Sample public IP changed to ${ip}; this is not a real address.`);});
+  $('applyBtn').addEventListener('click',()=>{const name=$('serverName').value.trim()||'cloudlab-web-server';$('serverName').value=name;$('instanceName').textContent=name;$('instanceDetails').textContent=`Region: ${$('region').value} (${ $('region').selectedOptions[0].text.split('— ')[1] }) · Type: ${$('instanceType').value} · Sample IP only`;$('instanceDetails').previousElementSibling.textContent=`Instance ID: i-demo-0a12bc34 · Type: ${$('instanceType').value}`;log(`Demo settings applied: ${name}, ${$('region').value}, ${$('instanceType').value}.`);toast('Demo settings updated');});
+  function updateProgress(){const tasks=[...document.querySelectorAll('.task')],done=tasks.filter(t=>t.checked).length,pct=Math.round(done/tasks.length*100);$('checkCount').textContent=`${done} / ${tasks.length}`;$('progressPercent').textContent=pct+'%';$('progressBar').style.width=pct+'%';}
+  document.querySelectorAll('.task').forEach(t=>t.addEventListener('change',()=>{updateProgress();log(`Checklist updated: ${t.parentElement.textContent.trim()} — ${t.checked?'completed':'unchecked'}.`);}));
+  const topics={
+    security:['Security groups control traffic to and from an instance. For a web demo, review inbound HTTP (port 80) and HTTPS (443); restrict SSH (22) to your own IP.','warn'],
+    ssh:['SSH is commonly used to administer Linux instances. Keep the private key secure and restrict inbound port 22.',''],
+    http:['A web server such as Nginx can serve this static HTML. For public access, configure the instance security group and server firewall for HTTP/HTTPS.','']
+  };
+  document.querySelectorAll('[data-topic]').forEach(b=>b.addEventListener('click',()=>{const [message,type]=topics[b.dataset.topic];log(message,type);toast('Practice note added to log');}));
+  $('clearLogBtn').addEventListener('click',()=>{$('log').innerHTML='';log('Log cleared. Ready for the next practice action.');});
+  $('deployHelpBtn').addEventListener('click',()=>{log('Deployment steps: 1) Launch Linux EC2. 2) Configure security group for HTTP/HTTPS and restricted SSH. 3) Connect securely. 4) Install Nginx/Apache. 5) Copy index.html to the web root. 6) Visit the instance public IP. 7) Stop/terminate resources when done.','warn');toast('Deployment steps added to activity log');});
+  $('resetBtn').addEventListener('click',()=>{running=true;$('stateBadge').textContent='● RUNNING';$('stateBadge').classList.remove('stopped');$('startBtn').disabled=true;$('stopBtn').disabled=false;$('runningCount').textContent='1';$('cpuValue').textContent='12%';$('serverName').value='cloudlab-web-server';$('instanceName').textContent='cloudlab-web-server';$('region').value='ap-south-1';$('instanceType').value='t3.micro';$('instanceDetails').textContent='Region: ap-south-1 (Mumbai) · Public IP: 18.204.10.25 (sample)';document.querySelectorAll('.task').forEach(t=>t.checked=false);updateProgress();$('log').innerHTML=initialLog;log('Demo reset to default state.');toast('Demo reset');});
+})();
+</script>
+</body>
+</html>
